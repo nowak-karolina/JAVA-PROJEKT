@@ -20,11 +20,15 @@ public class SQLConnection {
         }
     }
 
-    public List<Commodity> getData (){
+    public List<Commodity> getData (String param){
+        System.out.println("Get data sql " + param);
         List<Commodity> commodities = new ArrayList<>();
         try{
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from commodity");
+
+            String query = "SELECT * FROM commodity WHERE name = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, param);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
@@ -32,10 +36,10 @@ public class SQLConnection {
                 String name = resultSet.getString("name");
                 float price = resultSet.getFloat("price");
                 long updated = resultSet.getLong("updated");
-                Timestamp time = resultSet.getTimestamp("time");
 
-                Commodity commodity = new Commodity(exchange, name, price, updated, time);
+                Commodity commodity = new Commodity(exchange, name, price, updated);
                 commodities.add(commodity);
+                System.out.println("Pobrano dane z sql");
             }
         }catch (Exception e){
             System.out.println(e);
@@ -44,15 +48,15 @@ public class SQLConnection {
     }
 
     public int addToDB(Commodity commodity) {
-        String query = "INSERT INTO commodity (exchange, name, price, updated, time) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO commodity (exchange, name, price, updated) VALUES (?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, commodity.exchange);
             preparedStatement.setString(2, commodity.name);
             preparedStatement.setFloat(3, commodity.price);
             preparedStatement.setLong(4, commodity.updated);
-            preparedStatement.setTimestamp(5, commodity.time);
 
             int rowsAffected = preparedStatement.executeUpdate();
+            System.out.println("Dodano do db");
             return rowsAffected > 0 ? 0 : 1;
         } catch (Exception e) {
             System.out.println(e);

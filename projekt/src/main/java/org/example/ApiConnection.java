@@ -1,12 +1,11 @@
 package org.example;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.Timestamp;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -23,32 +22,35 @@ public class ApiConnection {
             e.printStackTrace();
         }
         this.key = "XmFJ/gDR3L9o3vAPnOtdWg==Ub7hwlP5RRxACpnZ";
-        this.parameter = eCommodities.GOLD_FUTURES.getParameter();
+        this.parameter = eCommodity.GOLD_FUTURES.getValue();
     }
 
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
 
-    public Commodity getData() throws Exception {
-        URL link = new URL(url.toString() + parameter);
-        HttpURLConnection connection = (HttpURLConnection) link.openConnection();
-        connection.setRequestProperty("accept", "application/json");
-        connection.setRequestProperty("X-API-Key", key);
+    public Commodity getJson(String parameter)  {
+        try{
+            URL link = new URL(url.toString() + parameter);
+            HttpURLConnection connection = (HttpURLConnection) link.openConnection();
+            connection.setRequestProperty("accept", "application/json");
+            connection.setRequestProperty("X-API-Key", key);
 
-        if (connection.getResponseCode() != 200) {
-            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+//        if (connection.getResponseCode() != 200) {
+//            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+//        }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
+            StringBuilder sb = new StringBuilder();
+            String output;
+            while ((output = br.readLine()) != null) {
+                sb.append(output);
+            }
+            connection.disconnect();
+            System.out.println("Pobrano jsona z api");
+
+            return parseJsonToCommodity(sb.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        BufferedReader br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
-        StringBuilder sb = new StringBuilder();
-        String output;
-        while ((output = br.readLine()) != null) {
-            sb.append(output);
-        }
-        connection.disconnect();
-
-        return parseJsonToCommodity(sb.toString());
+        return null;
     }
 
     private Commodity parseJsonToCommodity(String json) {
@@ -59,8 +61,8 @@ public class ApiConnection {
         String name = jsonObject.get("name").getAsString();
         float price = jsonObject.get("price").getAsFloat();
         long updated = jsonObject.get("updated").getAsLong();
-        Timestamp time = new Timestamp(System.currentTimeMillis());
 
-        return new Commodity(exchange, name, price, updated, time);
+        System.out.println("sparsowano jsona do klasy");
+        return new Commodity(exchange, name, price, updated);
     }
 }

@@ -8,15 +8,6 @@ public class Commodity {
     public String name;
     public float price;
     public long updated;
-    public Timestamp time;
-
-    public Commodity(String exchange, String name, float price, long updated, Timestamp time) {
-        this.exchange = exchange;
-        this.name = name;
-        this.price = price;
-        this.updated = updated;
-        this.time = time;
-    }
 
     public Commodity(String exchange, String name, float price, long updated) {
         this.exchange = exchange;
@@ -33,7 +24,6 @@ public class Commodity {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", updated=" + updated +
-                ", time=" + time +
                 '}';
     }
 }
