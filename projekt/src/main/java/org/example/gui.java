@@ -14,7 +14,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
 
 public class gui {
 
@@ -40,6 +44,7 @@ public class gui {
             //System.out.println(commodity.getParameter());
         }
         comboBoxCommodity.setSelectedIndex(0);
+        updateChartData(comboBoxCommodity.getSelectedItem().toString());
 
 
         getMoreDataButton.addActionListener(new ActionListener() {
@@ -58,6 +63,10 @@ public class gui {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //NOWY WYKRES
+                //String parameter = eCommodity.getValueOf(comboBoxCommodity.getSelectedItem().toString());
+                //Commodity commodity = apiConnection.getJson(parameter);
+                //sqlConnection.addToDB(commodity);
+                updateChartData(comboBoxCommodity.getSelectedItem().toString());
             }
         });
 
@@ -77,7 +86,7 @@ public class gui {
     public void createChart() {
         JFreeChart chart = ChartFactory.createTimeSeriesChart( //wykres czasowy
                 "Commodity Prices",
-                "Updated",
+                "Time",
                 "Price",
                 dataset,
                 true,
@@ -100,15 +109,24 @@ public class gui {
 
         if (commodities.isEmpty()) {
             System.out.println("No commodities found");
+            dataset.removeAllSeries();
+            jPanelChart.repaint();
             return;
         }
         TimeSeries timeSeries = new TimeSeries(param);
         for (Commodity commodity : commodities) {
-            // Konwertujemy wartość 'updated' na obiekt Timestamp
-            Timestamp timestamp = new Timestamp(commodity.updated);
-            System.out.println(timestamp.toString());
-            // Dodajemy dane do serii czasowej
-            timeSeries.addOrUpdate(new Second(timestamp), commodity.price);
+            String timestampStr = commodity.timestamp;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                Date parsedDate = dateFormat.parse(timestampStr);
+                long timestampMillis = parsedDate.getTime();
+                Timestamp timestamp = new Timestamp(timestampMillis);
+                //System.out.println(timestamp.toString());
+                timeSeries.addOrUpdate(new Second(timestamp), commodity.price);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
         }
 
         dataset.removeAllSeries();

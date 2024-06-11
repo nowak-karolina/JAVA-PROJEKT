@@ -36,8 +36,9 @@ public class SQLConnection {
                 String name = resultSet.getString("name");
                 float price = resultSet.getFloat("price");
                 long updated = resultSet.getLong("updated");
+                String timestamp = resultSet.getString("timestamp");
 
-                Commodity commodity = new Commodity(exchange, name, price, updated);
+                Commodity commodity = new Commodity(exchange, name, price, updated, timestamp);
                 commodities.add(commodity);
                 System.out.println("Pobrano dane z sql");
             }
