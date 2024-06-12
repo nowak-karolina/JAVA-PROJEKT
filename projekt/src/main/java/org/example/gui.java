@@ -10,6 +10,9 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,10 +29,12 @@ public class gui {
     private JButton getMoreDataButton;
     private JPanel jPanelChart;
     private JPanel jPanelMain;
+    private JTable table;
 
     private SQLConnection sqlConnection;
     private TimeSeriesCollection dataset;
     private ApiConnection apiConnection;
+    private CommodityTableModel tableModel;
 
 
     public gui(){
@@ -44,6 +49,11 @@ public class gui {
             //System.out.println(commodity.getParameter());
         }
         comboBoxCommodity.setSelectedIndex(0);
+
+        tableModel = new CommodityTableModel(sqlConnection.getData(comboBoxCommodity.getSelectedItem().toString()));
+        table.setModel(tableModel);
+        adjustColumnWidths();
+
         updateChartData(comboBoxCommodity.getSelectedItem().toString());
 
 
@@ -52,7 +62,7 @@ public class gui {
             public void actionPerformed(ActionEvent e) {
                 //sqlConnection.getData(eCommodity.getValueOf(comboBoxCommodity.getSelectedItem().toString()));
                 String parameter = eCommodity.getValueOf(comboBoxCommodity.getSelectedItem().toString());
-                Commodity commodity = apiConnection.getJson(parameter);
+                Commodity commodity = apiConnection.getCommodity(parameter);
                 sqlConnection.addToDB(commodity);
                 updateChartData(comboBoxCommodity.getSelectedItem().toString());
             }
@@ -70,18 +80,10 @@ public class gui {
             }
         });
 
+
         createChart();
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("gui");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setContentPane(new gui().jPanelMain);
-        frame.setPreferredSize(new Dimension(800, 600));
-        frame.pack();
-        frame.setVisible(true);
-
-    }
 
     public void createChart() {
         JFreeChart chart = ChartFactory.createTimeSeriesChart( //wykres czasowy
@@ -111,6 +113,7 @@ public class gui {
             System.out.println("No commodities found");
             dataset.removeAllSeries();
             jPanelChart.repaint();
+            tableModel.setCommodities(commodities);
             return;
         }
         TimeSeries timeSeries = new TimeSeries(param);
@@ -133,5 +136,33 @@ public class gui {
         dataset.addSeries(timeSeries);
 
         jPanelChart.repaint();
+        tableModel.setCommodities(commodities);
+    }
+
+    private void adjustColumnWidths() {
+        TableColumnModel columnModel = table.getColumnModel();
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            int width = 15; // Minimum width
+            for (int row = 0; row < table.getRowCount(); row++) {
+                TableCellRenderer renderer = table.getCellRenderer(row, column);
+                Component comp = table.prepareRenderer(renderer, row, column);
+                width = Math.max(comp.getPreferredSize().width + 1, width);
+            }
+            if (width > 300) {
+                width = 300; // Max width
+            }
+            TableColumn tableColumn = columnModel.getColumn(column);
+            tableColumn.setPreferredWidth(width);
+        }
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("gui");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setContentPane(new gui().jPanelMain);
+        frame.setPreferredSize(new Dimension(1200, 600));
+        frame.pack();
+        frame.setVisible(true);
+
     }
 }

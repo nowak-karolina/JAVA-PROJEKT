@@ -21,7 +21,7 @@ public class SQLConnection {
     }
 
     public List<Commodity> getData (String param){
-        System.out.println("Get data sql " + param);
+        //System.out.println("Get data sql " + param);
         List<Commodity> commodities = new ArrayList<>();
         try{
 
@@ -40,7 +40,7 @@ public class SQLConnection {
 
                 Commodity commodity = new Commodity(exchange, name, price, updated, timestamp);
                 commodities.add(commodity);
-                System.out.println("Pobrano dane z sql");
+                //System.out.println("Pobrano dane z sql");
             }
         }catch (Exception e){
             System.out.println(e);
@@ -57,7 +57,7 @@ public class SQLConnection {
             preparedStatement.setLong(4, commodity.updated);
 
             int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println("Dodano do db");
+            //System.out.println("Dodano do db");
             return rowsAffected > 0 ? 0 : 1;
         } catch (Exception e) {
             System.out.println(e);

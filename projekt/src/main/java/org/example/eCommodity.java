@@ -11,7 +11,7 @@ public enum eCommodity {
     OAT_FUTURES("Oat Futures", "Oat%20Futures"),
     ALUMINUM_FUTURES("Aluminum Futures", "Aluminum%20Futures"),
     SOYBEAN_MEAL_FUTURES("Soybean Meal Futures", "Soybean%20Meal%20Futures"),
-    SILVER_FUTURES("Silver Futures", "Silver%20Futures"),
+    //SILVER_FUTURES("Silver Futures", "Silver%20Futures"),                                 //API ZEPSUTE!!!!!
     SOYBEAN_FUTURES("Soybean Futures", "Soybean%20Futures"),
     LUMBER_FUTURES("Lumber Futures", "Lumber%20Futures"),
     LIVE_CATTLE_FUTURES("Live Cattle Futures", "Live%20Cattle%20Futures"),

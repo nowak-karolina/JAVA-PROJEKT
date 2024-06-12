@@ -6,9 +6,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -27,7 +24,7 @@ public class ApiConnection {
     }
 
 
-    public Commodity getJson(String parameter)  {
+    public Commodity getCommodity(String parameter)  {
         try{
             URL link = new URL(url.toString() + parameter);
             HttpURLConnection connection = (HttpURLConnection) link.openConnection();
@@ -45,7 +42,7 @@ public class ApiConnection {
                 sb.append(output);
             }
             connection.disconnect();
-            System.out.println("Pobrano jsona z api");
+            //System.out.println("Pobrano jsona z api");
 
             return parseJsonToCommodity(sb.toString());
         } catch (IOException e) {
@@ -64,7 +61,7 @@ public class ApiConnection {
         long updated = jsonObject.get("updated").getAsLong();
         //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        System.out.println("sparsowano jsona do klasy");
+        //System.out.println("sparsowano jsona do klasy");
         return new Commodity(exchange, name, price, updated);
     }
 }
