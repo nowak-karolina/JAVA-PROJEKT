@@ -52,8 +52,8 @@ public class gui {
 
         tableModel = new CommodityTableModel(sqlConnection.getData(comboBoxCommodity.getSelectedItem().toString()));
         table.setModel(tableModel);
-        adjustColumnWidths();
 
+        createChart();
         updateChartData(comboBoxCommodity.getSelectedItem().toString());
 
 
@@ -72,16 +72,10 @@ public class gui {
         comboBoxCommodity.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //NOWY WYKRES
-                //String parameter = eCommodity.getValueOf(comboBoxCommodity.getSelectedItem().toString());
-                //Commodity commodity = apiConnection.getJson(parameter);
-                //sqlConnection.addToDB(commodity);
                 updateChartData(comboBoxCommodity.getSelectedItem().toString());
             }
         });
 
-
-        createChart();
     }
 
 
@@ -139,22 +133,6 @@ public class gui {
         tableModel.setCommodities(commodities);
     }
 
-    private void adjustColumnWidths() {
-        TableColumnModel columnModel = table.getColumnModel();
-        for (int column = 0; column < table.getColumnCount(); column++) {
-            int width = 15; // Minimum width
-            for (int row = 0; row < table.getRowCount(); row++) {
-                TableCellRenderer renderer = table.getCellRenderer(row, column);
-                Component comp = table.prepareRenderer(renderer, row, column);
-                width = Math.max(comp.getPreferredSize().width + 1, width);
-            }
-            if (width > 300) {
-                width = 300; // Max width
-            }
-            TableColumn tableColumn = columnModel.getColumn(column);
-            tableColumn.setPreferredWidth(width);
-        }
-    }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("gui");

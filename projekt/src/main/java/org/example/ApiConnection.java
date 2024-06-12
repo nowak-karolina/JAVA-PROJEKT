@@ -31,10 +31,6 @@ public class ApiConnection {
             connection.setRequestProperty("accept", "application/json");
             connection.setRequestProperty("X-API-Key", key);
 
-//        if (connection.getResponseCode() != 200) {
-//            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
-//        }
-
             BufferedReader br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
             StringBuilder sb = new StringBuilder();
             String output;
